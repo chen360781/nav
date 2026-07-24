@@ -385,15 +385,15 @@ html.dark .category-item.active {
 @media (min-width: 1025px) {
   .category-sidebar.is-desktop {
     position: fixed;
-    top: calc(var(--app-header-height, 140px) + 1rem);
+    top: calc(var(--app-header-height, 140px));
     left: 0;
     width: 300px;
-    height: calc(100vh - var(--app-header-height, 140px) - 1rem);
-    transform: translateX(0);            /* .is-desktop 特异性高于基础规则，桌面端恒显示 */
+    height: calc(100vh - var(--app-header-height, 140px));
+    transform: translateX(0);
     border-radius: 0;
     border-right: 1px solid rgba(0, 0, 0, 0.1);
     box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
-    z-index: 50;                         /* 低于顶栏(header=100)，高于主内容 */
+    z-index: 50;
   }
 
   html.dark .category-sidebar.is-desktop {
