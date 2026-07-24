@@ -544,17 +544,29 @@ html.dark .app-header {
 }
 
 @media (min-width: 1025px) {
+  /* 桌面端分类栏常驻，隐藏汉堡按钮 */
+  .sidebar-toggle-btn {
+    display: none;
+  }
+
+  /* 固定侧栏脱离文档流，主内容必须让出左侧 300px，否则会被遮住 */
   .main-layout {
-    gap: 2rem;
-    padding-left: 1.5rem;
+    max-width: none;
+    margin: 0;
+    gap: 0;
+    padding-left: 316px;   /* 300 侧栏 + 16 间距 */
     padding-right: 1.5rem;
   }
-  
+
   /* Efficient Mode - Desktop */
   .main-layout.efficient-mode {
-    gap: 1.25rem;
-    padding-left: 1rem;
+    padding-left: 312px;
     padding-right: 1rem;
+  }
+
+  /* 页脚同样让出左侧，避免被固定侧栏压住 */
+  .app-footer {
+    padding-left: 316px;
   }
 }
 

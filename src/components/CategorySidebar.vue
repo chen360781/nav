@@ -380,4 +380,35 @@ html.dark .category-item.active {
   height: 14px;
   stroke-width: 2;
 }
+
+/* ===== 桌面端（≥1025px）：分类栏固定贴浏览器左缘，常驻可见 ===== */
+@media (min-width: 1025px) {
+  .category-sidebar.is-desktop {
+    position: fixed;
+    top: calc(var(--app-header-height, 140px) + 1rem);
+    left: 0;
+    width: 300px;
+    height: calc(100vh - var(--app-header-height, 140px) - 1rem);
+    transform: translateX(0);            /* .is-desktop 特异性高于基础规则，桌面端恒显示 */
+    border-radius: 0;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+    z-index: 50;                         /* 低于顶栏(header=100)，高于主内容 */
+  }
+
+  html.dark .category-sidebar.is-desktop {
+    border-right-color: rgba(255, 255, 255, 0.1);
+  }
+
+  /* 常驻时隐藏关闭按钮（无需收起） */
+  .category-sidebar.is-desktop .sidebar-close {
+    display: none;
+  }
+
+  /* 分类很多时在栏内滚动 */
+  .category-sidebar.is-desktop .category-list {
+    overflow-y: auto;
+    flex: 1;
+  }
+}
 </style>
