@@ -121,8 +121,8 @@
       <div v-else class="main-layout efficient-mode">
         <!-- Sidebar Backdrop -->
         <div 
-          v-if="sidebarOpen" 
-          class="sidebar-backdrop" 
+          v-if="sidebarOpen && !isDesktop" 
+          class="sidebar-backdrop"
           @click="sidebarOpen = false"
         ></div>
         
@@ -539,7 +539,7 @@ function updateActiveCategoryFromScroll() {
 
 const handleSelectCategory = (categoryId) => {
   selectedCategoryId.value = categoryId
-  sidebarOpen.value = false
+  if (!isDesktop.value) sidebarOpen.value = false
   scrollToTop()
 }
 
