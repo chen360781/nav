@@ -12,6 +12,16 @@
            <h2 class="sidebar-app-title">{{ customTitle }}</h2>
          </div>
          <button
+           v-if="isDesktop"
+           class="sidebar-scroll-top-btn"
+           @click="scrollToTop"
+           title="返回顶部"
+         >
+           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+             <polyline points="18 15 12 9 6 15" />
+           </svg>
+         </button>
+         <button
            class="sidebar-close"
            type="button"
            @click="$emit('toggle')"
@@ -25,7 +35,7 @@
 
       <div v-if="!categories.length" class="sidebar-empty">暂无分类</div>
 
-      <ul v-else class="category-list">
+      <ul v-else ref="listRef" class="category-list">
         <!-- 全部书签选项 -->
         <li
           class="category-item category-all"
@@ -70,7 +80,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import CategoryTreeItem from './CategoryTreeItem.vue'
 import { buildCategoryTree } from '../utils/categoryTree'
 
@@ -126,6 +136,12 @@ const emit = defineEmits([
   'edit-category',
   'delete-category'
 ])
+
+const listRef = ref(null)
+
+const scrollToTop = () => {
+  listRef.value?.scrollTo({ top: 0, behavior: 'smooth' })
+}
 
 const treeData = computed(() => buildCategoryTree(props.categories))
 const categoryTree = computed(() => treeData.value.tree)
@@ -409,6 +425,29 @@ html.dark .category-item.active {
   .category-sidebar.is-desktop .category-list {
     overflow-y: auto;
     flex: 1;
+  }
+
+  /* 返回顶部按钮：在标题右侧，始终可见 */
+  .category-sidebar.is-desktop .sidebar-scroll-top-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    padding: 0.4rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: color 0.2s ease, background 0.2s ease;
+    flex-shrink: 0;
+  }
+  .category-sidebar.is-desktop .sidebar-scroll-top-btn:hover {
+    color: var(--primary);
+    background: rgba(99, 102, 241, 0.08);
+  }
+  .category-sidebar.is-desktop .sidebar-scroll-top-btn svg {
+    width: 18px;
+    height: 18px;
   }
 }
 </style>
