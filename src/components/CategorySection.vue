@@ -355,7 +355,18 @@ const handleGridDragOver = (e) => {
   let closestIndex = -1
   
   cards.forEach((card) => {
-    const cardRect = ca                     e.clientY >= cardRect.top &&
+    const cardRect = card.getBoundingClientRect()
+    const cardCenterX = cardRect.left + cardRect.width / 2
+    const cardCenterY = cardRect.top + cardRect.height / 2
+
+    const distanceX = Math.abs(e.clientX - cardCenterX)
+    const distanceY = Math.abs(e.clientY - cardCenterY)
+    const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY)
+
+    // 检查鼠标是否在卡片区域内
+    const isInCardArea = e.clientX >= cardRect.left &&
+                        e.clientX <= cardRect.right &&
+                        e.clientY >= cardRect.top &&
                         e.clientY <= cardRect.bottom
     
     // 如果鼠标在卡片内，或者距离更近，则更新最近卡片
