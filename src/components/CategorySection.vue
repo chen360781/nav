@@ -37,7 +37,28 @@
       </div>
     </div>
     
-    <div v-if="category.children && category.children.length > 0" class="subcategories-grid">
+    <!-- 二级分类 Tab 条（浏览模式）：点 Tab 在当前页切换书签 -->
+    <div v-if="hasSubTabs" class="subcategory-tabs">
+      <button
+        v-for="sub in category.children"
+        :key="sub.id"
+        type="button"
+        class="sub-tab"
+        :class="{ active: activeSubId === sub.id }"
+        @click="selectSub(sub.id)"
+      >
+        <svg class="sub-tab-icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" fill-opacity="0.2"/>
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" fill="none"/>
+        </svg>
+        {{ sub.name }}
+      </button>
+    </div>
+    <!-- 原文件夹卡片（编辑/批量模式保留，用于进入子分类管理） -->
+    <div
+      v-else-if="category.children && category.children.length > 0"
+      class="subcategories-grid"
+    >
       <div 
         v-for="sub in category.children" 
         :key="sub.id"
@@ -67,7 +88,7 @@
       @dragleave="handleGridDragLeave"
       @drop="handleDropOnGrid"
     >
-      <template v-for="(bookmark, index) in bookmarks" :key="bookmark.id">
+      <template v-for="(bookmark, index) in activeBookmarks" :key="bookmark.id">
         <!-- 占位符：显示在拖拽插入位置之前 -->
         <div
           v-if="showPlaceholder && placeholderIndex === index && placeholderPosition === 'before' && currentDraggedId !== bookmark.id"
@@ -141,6 +162,10 @@ const props = defineProps({
     type: Array,
     default: () => []
   },
+  bookmarksByCategory: {
+    type: Object,
+    default: () => ({})
+  }
 
 })
 
@@ -154,6 +179,22 @@ const emit = defineEmits([
   'toggle-selection',
   'toggle-category-selection'
 ])
+
+// 二级分类 Tab 切换（仅浏览模式）：点 Tab 在当前页切换书签，不跳转
+const activeSubId = ref(props.category?.children?.[0]?.id ?? null)
+const hasSubTabs = computed(() =>
+  !props.isEditMode &&
+  !props.isBatchMode &&
+  Array.isArray(props.category?.children) &&
+  props.category.children.length > 0
+)
+const activeBookmarks = computed(() => {
+  if (hasSubTabs.value && activeSubId.value != null) {
+    return props.bookmarksByCategory?.[activeSubId.value] || []
+  }
+  return props.bookmarks
+})
+const selectSub = (id) => { activeSubId.value = id }
 
 const gridRef = ref(null)
 const isGridDragOver = ref(false)
@@ -314,19 +355,7 @@ const handleGridDragOver = (e) => {
   let closestIndex = -1
   
   cards.forEach((card) => {
-    const cardRect = card.getBoundingClientRect()
-    const cardCenterX = cardRect.left + cardRect.width / 2
-    const cardCenterY = cardRect.top + cardRect.height / 2
-    
-    // 计算到鼠标的距离（考虑水平和垂直距离）
-    const distanceX = Math.abs(e.clientX - cardCenterX)
-    const distanceY = Math.abs(e.clientY - cardCenterY)
-    const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY)
-    
-    // 检查鼠标是否在卡片区域内
-    const isInCardArea = e.clientX >= cardRect.left &&
-                        e.clientX <= cardRect.right &&
-                        e.clientY >= cardRect.top &&
+    const cardRect = ca                     e.clientY >= cardRect.top &&
                         e.clientY <= cardRect.bottom
     
     // 如果鼠标在卡片内，或者距离更近，则更新最近卡片
@@ -701,5 +730,47 @@ html.dark .category-title .private-badge {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* 二级分类 Tab 条（浏览模式切换书签，文件夹卡片式，紫色主题） */
+.subcategory-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+
+.sub-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.95rem;
+  background: var(--bg-tertiary, #f1f5f9);
+  color: var(--text-secondary, #64748b);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: var(--radius-md, 10px);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sub-tab-icon {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2;
+}
+
+.sub-tab:hover {
+  background: var(--bg-secondary, #f8fafc);
+  border-color: var(--primary, #6366f1);
+  color: var(--primary, #6366f1);
+}
+
+.sub-tab.active {
+  background: #ffffff;
+  color: var(--primary, #6366f1);
+  border-color: var(--primary, #6366f1);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.18);
 }
 </style>
