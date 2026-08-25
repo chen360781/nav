@@ -188,6 +188,7 @@
               :key="category.id"
               :category="category"
               :bookmarks="bookmarksByCategory[category.id] || []"
+              :bookmarks-by-category="bookmarksByCategory"
               :is-edit-mode="isEditMode"
               :is-batch-mode="isBatchMode"
               :selected-ids="selectedIds"
